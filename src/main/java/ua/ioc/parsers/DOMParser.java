@@ -1,13 +1,9 @@
 package ua.ioc.parsers;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import com.sun.corba.se.spi.activation._LocatorImplBase;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import ua.ioc.beans.Bean;
-import ua.ioc.beans.ConstructorArg;
-import ua.ioc.beans.Property;
+import ua.ioc.beans.BeanDefinition;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,51 +11,60 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Created by Mykhailo_Hodovaniuk on 2/11/14.
+ * Created by Mykhailo_Hodovaniuk on 2/14/14.
  */
 public class DOMParser implements XMLParser {
+    private File xmlFile;
+
+    public DOMParser(String xmlFileName) {
+        this.xmlFile = new File(xmlFileName);
+    }
+
     @Override
-    public List<Bean> parse(File file) throws IOException, SAXException, ParserConfigurationException {
-        List<Bean> beans=new ArrayList<Bean>();
+    public List<BeanDefinition> parse() throws IOException, SAXException, ParserConfigurationException {
+        List<BeanDefinition> result=new ArrayList<>();
+        File fXmlFile = xmlFile;
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(file);
+        Document doc = dBuilder.parse(fXmlFile);
         doc.getDocumentElement().normalize();
-        NodeList nodeList=doc.getElementsByTagName("bean");
+
+        NodeList nodeList = doc.getElementsByTagName("bean");
         for (int i = 0; i < nodeList.getLength(); i++) {
-            Bean bean=new Bean();
-            Node beanNode=nodeList.item(i);
-            NamedNodeMap attributes = beanNode.getAttributes();
-            bean.setId(attributes.getNamedItem("id").getTextContent());
-            bean.setClazz(attributes.getNamedItem("class").getTextContent());
-            NodeList paramNodeList = beanNode.getChildNodes();
-            List<ConstructorArg> constructorArgs=new ArrayList<>();
-            List<Property> properties=new ArrayList<>();
-            for (int j = 0; j < paramNodeList.getLength(); j++) {
-                Node paramNode=paramNodeList.item(j);
-                switch (paramNode.getLocalName()){
-                    case "constructor-arg":
-                        ConstructorArg constructorArg=new ConstructorArg();
-                        constructorArg.setValue(paramNode.getAttributes().getNamedItem("value").getTextContent());
-                        constructorArg.setRef(paramNode.getAttributes().getNamedItem("ref").getTextContent());
-                        constructorArgs.add(constructorArg);
-                        break;
-                    case "property":
-                        Property property=new Property();
-                        property.setValue(paramNode.getAttributes().getNamedItem("name").getTextContent());
-                        property.setValue(paramNode.getAttributes().getNamedItem("ref").getTextContent());
-                        property.setValue(paramNode.getAttributes().getNamedItem("value").getTextContent());
-                        properties.add(property);
-                        break;
-                }
-            }
-            bean.setConstructorArgs(constructorArgs);
-            bean.setProprties(properties);
-            beans.add(bean);
+            Element element=(Element)nodeList.item(i);
+            result.add(new BeanDefinition(processAttributes(element),processParameters(element)));
         }
-        return beans;
+        return result;
+    }
+
+    private Map<String, List<Map<String, String>>> processParameters(Element element) {
+        Map<String, List<Map<String, String>>> parameters=new HashMap<>();
+        NodeList nodes = element.getElementsByTagName("*");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node item=nodes.item(i);
+            addToMap(parameters, item.getNodeName() ,processAttributes(item));
+        }
+        return parameters;
+    }
+
+    private Map<String, String> processAttributes(Node node) {
+        Map<String,String> result=new HashMap<>();
+        NamedNodeMap attributes = node.getAttributes();
+        for (int i = 0;  i < attributes.getLength() ; i++) {
+            Node item = attributes.item(i);
+            result.put(item.getNodeName(), item.getNodeValue());
+        }
+        return result;
+    }
+
+    private void addToMap(Map<String, List<Map<String, String>>> map,String elementName, final Map<String,String> attributes){
+        if (map.containsKey(elementName))
+            map.get(elementName).add(attributes);
+        else map.put(elementName,new ArrayList<Map<String, String>>(){{add(attributes);}});
     }
 }
