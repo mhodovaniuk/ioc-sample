@@ -9,11 +9,15 @@ public class BeanNameUtil {
     private BeanNameUtil() {
     }
 
-    public static String toBeanName(String clazz){
-        int lastDotIndex=clazz.lastIndexOf('.');
+    public static String toBeanName(String clazzName){
+        int lastDotIndex=clazzName.lastIndexOf('.');
         if (lastDotIndex==-1)
             lastDotIndex=0;
-        clazz=clazz.substring(lastDotIndex);
-        return Character.toLowerCase(clazz.charAt(0))+clazz.substring(1);
+        clazzName=clazzName.substring(lastDotIndex);
+        return Character.toLowerCase(clazzName.charAt(0))+clazzName.substring(1);
+    }
+
+    public static String getSetterName(String beanName){
+        return "set"+Character.toUpperCase(beanName.charAt(0))+beanName.substring(1);
     }
 }

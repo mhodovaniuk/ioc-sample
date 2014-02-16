@@ -8,5 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface XMLParser {
-    List<BeanDefinition> parse() throws IOException, SAXException, ParserConfigurationException;
+    List<BeanDefinition> parse(String xmlFileName) throws IOException, SAXException, ParserConfigurationException;
+    ParserType getType();
 }

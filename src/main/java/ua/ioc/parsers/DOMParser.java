@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,16 +20,12 @@ import java.util.Map;
  * Created by Mykhailo_Hodovaniuk on 2/14/14.
  */
 public class DOMParser implements XMLParser {
-    private File xmlFile;
-
-    public DOMParser(String xmlFileName) {
-        this.xmlFile = new File(xmlFileName);
-    }
+    private static ParserType type=ParserType.DOM;
 
     @Override
-    public List<BeanDefinition> parse() throws IOException, SAXException, ParserConfigurationException {
+    public List<BeanDefinition> parse(String xmlFileName) throws IOException, SAXException, ParserConfigurationException {
         List<BeanDefinition> result=new ArrayList<>();
-        File fXmlFile = xmlFile;
+        File fXmlFile = new File(xmlFileName);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(fXmlFile);
@@ -50,6 +47,11 @@ public class DOMParser implements XMLParser {
             addToMap(parameters, item.getNodeName() ,processAttributes(item));
         }
         return parameters;
+    }
+
+    @Override
+    public ParserType getType() {
+        return type;
     }
 
     private Map<String, String> processAttributes(Node node) {

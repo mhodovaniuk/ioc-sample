@@ -1,7 +1,8 @@
 <beans>
     <bean id="test" class="ua.test.Test">
-        <constructor-arg value="qwerty"/>
+        <constructor-arg value="12345"/>
+        <property name="b" value="999999"/>
         <property name="w2" value="09876"/>
-        <property name="w3" ref="54321"/>
+        <property name="w3" value="54321"/>
     </bean>
 </beans>

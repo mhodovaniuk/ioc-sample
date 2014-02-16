@@ -1,10 +1,5 @@
 package ua.ioc.beans;
 
-import ua.ioc.beans.parameters.constructor.ConstructorArg;
-import ua.ioc.beans.parameters.property.Property;
-import ua.ioc.util.BeanNameUtil;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +7,8 @@ import java.util.Map;
  * Created by Mykhailo_Hodovaniuk on 2/11/14.
  */
 public class BeanDefinition {
+    public static final String ID="id", CLASS="class",CONSTRUCTOR_ARG="constructor-arg",PROPERTY="property"
+            ,VALUE="value", REF="ref", NAME="name";
     Map<String,String> attributes;
     Map<String,List<Map<String,String>>> parameters;
 
@@ -34,5 +31,9 @@ public class BeanDefinition {
 
     public void setParameters(Map<String, List<Map<String, String>>> parameters) {
         this.parameters = parameters;
+    }
+
+    public String getId(){
+        return getAttributes().get(ID);
     }
 }

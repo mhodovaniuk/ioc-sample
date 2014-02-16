@@ -4,6 +4,25 @@ package ua.test;
  * Created by Mykhailo_Hodovaniuk on 2/13/14.
  */
 public class Test {
+    private int a;
+    private int b;
+
+    public int getA() {
+        return a;
+    }
+
+    public void setA(int a) {
+        this.a = a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(int b) {
+        this.b = b;
+    }
+
     private String w1;
     private String w2;
 
@@ -17,12 +36,17 @@ public class Test {
 
     private String w3;
 
-    public Test(String w1){
-        this.w1=w1;
+
+    public Test(int a){
+        this.a=a;
     }
 
+//    public Test(String w1){
+//        this.w1=w1;
+//    }
+
     public void say(){
-        System.out.println(w1+w2+w3);
+        System.out.println(a+w1+w2+w3+b);
     }
     public String getW1() {
         return w1;
